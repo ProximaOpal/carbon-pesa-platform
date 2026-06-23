@@ -45,7 +45,7 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://carbonpesaagent-1.onrender.com",   # production frontend
+        "https://proxima-opal-platform-1.onrender.com",   # production frontend
         "http://localhost:3000",               # local dev
         "http://localhost:5500",               # VS Code Live Server
         "http://127.0.0.1:5500",

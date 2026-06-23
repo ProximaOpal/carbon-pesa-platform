@@ -3,7 +3,7 @@
 // =====================================================================
 
 document.addEventListener('DOMContentLoaded', () => {
-  const API_BASE = "https://carbonpesaagent-1.onrender.com";
+  const API_BASE = "https://proxima-opal-platform-1.onrender.com";
   let activeFarmId = 1;
 
   // ───────────────────────────────────────────────────────────────────
