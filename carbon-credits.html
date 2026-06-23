@@ -774,7 +774,7 @@
     }
     
     function fetchLivePrice() {
-      fetch("https://proxima-opal-platform-1.onrender.com/stats/dashboard")
+      fetch("https://carbonpesaagent-1.onrender.com/stats/dashboard")
         .then(res => res.json())
         .then(data => {
           const currentPrice = data.spot_price_usd || (lastPrice + (Math.random()-0.5));
@@ -841,7 +841,7 @@
     });
     // M-PESA LOGIC & OTP LOGIC
     const CONFIG = Object.freeze({
-        API_BASE_URL: "https://proxima-opal-platform-1.onrender.com",
+        API_BASE_URL: "https://marvel-network.onrender.com",
         POLL_INTERVAL_MS: 5000,
         POLL_MAX_ATTEMPTS: 12,
         TOAST_DURATION_MS: 5000
