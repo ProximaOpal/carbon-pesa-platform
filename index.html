@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Carbon Pesa — Climate Action Platform</title>
+  <meta name="description" content="Carbon Pesa — Bridging Climate Investors with Youth Tree Planters across Urban & Rural Communities Worldwide." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:ital,wght@0,300;0,400;0,500;0,700;0,900;1,300&family=Playfair+Display:ital@1&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/odometer.js/0.4.8/themes/odometer-theme-minimal.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/odometer.js/0.4.8/odometer.min.js"></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ░░ HERO BACKGROUND ░░ -->
+  <div class="hero-bg" id="heroBg"></div>
+  <div class="hero-overlay"></div>
+
+  <!-- ░░ PAGE SHELL ░░ -->
+  <div class="page" id="page">
+
+    <!-- ══════════════ HEADER ══════════════ -->
+    <header class="header" id="header">
+      <div class="header-left">
+        <button class="icon-btn" id="searchBtn" aria-label="Search">
+          <i class="fas fa-search"></i>
+        </button>
+        <a href="#" class="brand" id="brandLogo">CARBON PESA</a>
+      </div>
+
+      <div class="header-right">
+        <button class="icon-btn menu-icon" id="menuBtn" aria-label="Menu">
+          <i class="fas fa-bars"></i>
+        </button>
+        <nav class="main-nav" id="mainNav" aria-label="Main navigation">
+          <a href="index.html" class="nav-link active" id="navHome">Home</a>
+          <a href="map.html" class="nav-link" id="navMap">Audit Maps</a>
+          <a href="carbon-credits.html" class="nav-link" id="navCredits">Carbon Credits</a>
+          <a href="education.html" class="nav-link" id="navEducation">Education</a>
+          <a href="partners.html" class="nav-link" id="navPartners">Partners</a>
+        </nav>
+      </div>
+    </header>
+
+    <!-- ══════════════ MAIN SPLIT ══════════════ -->
+    <main class="main-split" id="mainContent">
+
+      <!-- ── LEFT COLUMN ── -->
+      <div class="col-left" id="colLeft">
+        <div class="hero-text" id="heroText">
+
+          <!-- Platform tag line -->
+          <p class="platform-tag" id="platformTag">CLIMATE ACTION PLATFORM</p>
+
+          <!-- Giant hero words -->
+          <p class="hero-top" id="heroTop">BRIDGING</p>
+          <h1 class="hero-main" id="heroMain">CLIMATE</h1>
+
+          <!-- Decorative line + italic brand -->
+          <div class="hero-deco" id="heroDeco">
+            <span class="deco-line"></span>
+            <em class="deco-label">Carbon Pesa</em>
+          </div>
+
+          <!-- Subtitle -->
+          <p class="hero-subtitle" id="heroSubtitle">
+            Bridging Climate Investors with Youth Tree Planters<br />
+            across Urban &amp; Rural Communities Worldwide
+          </p>
+
+          <!-- Stats row -->
+          <div class="stats-row" id="statsRow" style="display: flex; gap: 40px;">
+            <div class="stat-item" style="text-align: left;">
+              <div style="font-size: 32px; font-weight: 700; display: flex; align-items: baseline; gap: 4px;">
+                <span class="odometer" id="odoCarbon">0</span>
+              </div>
+              <span class="stat-lbl" style="font-size: 14px; letter-spacing: 1px;">Total tCO₂e Sequestered</span>
+            </div>
+            <div class="stat-item" style="text-align: left;">
+              <div style="font-size: 32px; font-weight: 700; display: flex; align-items: baseline; gap: 4px;">
+                <span style="font-size: 24px;">$</span><span class="odometer" id="odoPayout">0</span>
+              </div>
+              <span class="stat-lbl" style="font-size: 14px; letter-spacing: 1px;">USD Flowing to Rural Families</span>
+            </div>
+          </div>
+
+          <!-- CTA Buttons -->
+          <div class="cta-row" id="ctaRow">
+            <a href="map.html" class="btn-primary" id="btnPlant" style="text-decoration: none; text-align: center;">CARBON AUDIT MAPS</a>
+            <a href="carbon-credits.html" class="btn-ghost" id="btnWorkflow" style="text-decoration: none; text-align: center;">VIEW METRICS</a>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ── THIN DIVIDER ── -->
+      <div class="col-divider" id="colDivider"></div>
+
+      <!-- ── RIGHT COLUMN ── -->
+      <div class="col-right" id="colRight">
+        <div class="feature-block" id="featureBlock">
+          <div class="feat-number" id="featNumber">01.</div>
+          <h2 class="feat-heading" id="featHeading">MISSION</h2>
+          <p class="feat-body" id="featBody">
+            Carbon Pesa bridges global climate capital with youth-powered
+            tree planting. Every investment funds verified missions executed
+            by university students, high-schoolers and rural communities.
+          </p>
+          <p class="feat-body" id="featBody2">
+            From funding to satellite verification to M-Pesa payouts —
+            the full impact cycle in 48-72 hours.
+          </p>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- ══════════════ BOTTOM BAR ══════════════ -->
+    <footer class="bottom-bar" id="bottomBar">
+      <button class="share-btn" id="shareBtn" aria-label="Share">
+        <i class="fas fa-share-alt share-icon"></i>
+        <span class="share-label">share</span>
+      </button>
+
+      <div class="dots-nav" id="dotsNav" role="navigation" aria-label="Slide navigation">
+        <button class="dot active" id="dot1" aria-label="Slide 1">◇</button>
+        <button class="dot" id="dot2" aria-label="Slide 2">◇</button>
+        <button class="dot" id="dot3" aria-label="Slide 3">◇</button>
+        <button class="dot" id="dot4" aria-label="Slide 4">◇</button>
+        <button class="dot" id="dot5" aria-label="Slide 5">◇</button>
+      </div>
+    </footer>
+
+  </div><!-- /page -->
+
+  <!-- ══════════════ SOCIAL SIDEBAR ══════════════ -->
+  <aside class="social-sidebar" id="socialSidebar" aria-label="Social media links">
+    <div class="social-icons">
+      <a href="#" class="soc-link" id="socTwitter" aria-label="Twitter / X">
+        <i class="fab fa-x-twitter"></i>
+      </a>
+      <a href="#" class="soc-link" id="socFacebook" aria-label="Facebook">
+        <i class="fab fa-facebook-f"></i>
+      </a>
+      <a href="#" class="soc-link" id="socInstagram" aria-label="Instagram">
+        <i class="fab fa-instagram"></i>
+      </a>
+      <a href="#" class="soc-link" id="socYoutube" aria-label="YouTube">
+        <i class="fab fa-youtube"></i>
+      </a>
+    </div>
+    <span class="follows-text">FOLLOWS</span>
+  </aside>
+
+  <!-- ══════════════ SEARCH OVERLAY ══════════════ -->
+  <div class="search-overlay" id="searchOverlay">
+    <button class="search-close" id="searchClose" aria-label="Close search">
+      <i class="fas fa-times"></i>
+    </button>
+    <input type="text" class="search-input" id="searchInput" placeholder="Search Carbon Pesa…" aria-label="Search" />
+  </div>
+
+  <script src="state-manager.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

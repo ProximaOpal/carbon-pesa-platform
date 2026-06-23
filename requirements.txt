@@ -1,0 +1,7 @@
+# Carbon Pesa — Python Backend Dependencies
+# Pin minor versions for reproducible Render deploys.
+# To update: pip install -U fastapi uvicorn[standard] && pip freeze > requirements.txt
+
+fastapi==0.111.1
+uvicorn[standard]==0.30.1
+pydantic==2.7.4

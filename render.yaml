@@ -1,0 +1,25 @@
+# =======================================================================
+# render.yaml — Carbon Pesa Backend Deploy Configuration
+# Commit this file to your repo root and Render will auto-detect it.
+# Docs: https://render.com/docs/render-yaml-spec
+# =======================================================================
+
+services:
+  - type: web
+    name: carbonpesa-api
+    runtime: python
+    # Render free tier uses Python 3.11 by default — explicit pin for safety
+    pythonVersion: "3.11"
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    plan: free
+
+    # Health-check: Render will restart the dyno if this returns non-200
+    healthCheckPath: /
+
+    envVars:
+      # Add any secrets here as Render environment variables (never hardcode)
+      # - key: SECRET_KEY
+      #   generateValue: true
+      - key: ENVIRONMENT
+        value: production

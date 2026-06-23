@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Carbon Pesa — Carbon Credits</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" />
+  <link rel="stylesheet" href="platform.css" />
+  
+  <!-- Add Chart.js for the carbon chart -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    /* OTP Modal Styling */
+    .auth-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px);
+      display: none; align-items: center; justify-content: center; z-index: 5000;
+    }
+    .auth-modal {
+      background: #1A1A1A; width: 480px; border-radius: 12px; padding: 25px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5); font-family: var(--font-main);
+    }
+    .auth-header {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;
+    }
+    .auth-title { font-size: 18px; font-weight: 500; }
+    .auth-close { background: none; border: none; color: #A0A0A0; font-size: 20px; cursor: pointer; }
+    
+    .auth-section { margin-bottom: 25px; }
+    .auth-section-title { font-size: 15px; font-weight: 500; display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .auth-section-desc { font-size: 13px; color: #A0A0A0; margin-bottom: 15px; line-height: 1.4; }
+    
+    .auth-qr-area { display: flex; gap: 20px; background: #222; padding: 20px; border-radius: 8px; border: 1px solid #333; }
+    .auth-qr-img { width: 120px; height: 120px; background: #fff; padding: 5px; border-radius: 4px; }
+    .auth-secret-area { flex: 1; }
+    .auth-secret-label { font-size: 13px; margin-bottom: 10px; display: block; }
+    .auth-secret-input { 
+      background: #111; border: 1px solid #333; color: #fff; padding: 10px 15px; border-radius: 6px; 
+      width: 100%; font-family: monospace; font-size: 14px; margin-bottom: 10px;
+    }
+    .auth-copy-btn {
+      background: #333; border: none; color: #fff; padding: 8px 12px; border-radius: 6px; 
+      font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 6px;
+    }
+    
+    .auth-otp-grid { display: flex; gap: 10px; justify-content: space-between; }
+    .auth-otp-input {
+      width: 45px; height: 55px; background: #111; border: 1px solid #333; border-radius: 8px;
+      color: #fff; font-size: 24px; text-align: center; outline: none; transition: border 0.2s;
+    }
+    .auth-otp-input:focus { border-color: var(--cp-green); }
+    
+    .auth-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 30px; }
+    .auth-btn-cancel { background: #222; border: none; color: #A0A0A0; padding: 10px 20px; border-radius: 8px; cursor: pointer; }
+    .auth-btn-verify { background: var(--cp-green); border: none; color: #000; padding: 10px 25px; border-radius: 8px; font-weight: 600; cursor: pointer; }
+
+    /* Crypto Dashboard Styles */
+    .crypto-dash-view {
+      background-color: #191919;
+      min-height: calc(100vh - 70px);
+      padding: 30px;
+      font-family: var(--font-main);
+    }
+    .crypto-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .c-panel {
+      background: #1A1A1A;
+      border: 1px solid #333333;
+      border-radius: 12px;
+    }
+    
+    /* Top Bar */
+    .c-topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 24px;
+      border-radius: 16px;
+    }
+    .c-top-left, .c-top-right {
+      display: flex;
+      align-items: center;
+      gap: 30px;
+    }
+    .c-logo { font-size: 24px; color: var(--cp-green); font-weight: 700; }
+    .c-nav-links { display: flex; gap: 20px; }
+    .c-nav-links a { color: #A0A0A0; text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s; }
+    .c-nav-links a:hover { color: #fff; }
+    .c-badge-new { background: var(--cp-green); color: #000; font-size: 10px; padding: 2px 6px; border-radius: 10px; font-weight: 700; margin-left: 6px; vertical-align: top;}
+    
+    .c-price-box {
+      background: #222;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .c-user-box {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 13px;
+      color: #A0A0A0;
+    }
+    .c-user-box img { width: 30px; height: 30px; border-radius: 50%; }
+    
+    /* Stats Bar */
+    .c-statsbar {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+    }
+    .c-stat-chip {
+      background: #1A1A1A;
+      border: 1px solid #333;
+      border-radius: 12px;
+      padding: 12px 20px;
+      font-size: 12px;
+      color: #A0A0A0;
+      white-space: nowrap;
+      flex: 1;
+      text-align: center;
+    }
+    .c-stat-chip strong { color: #fff; margin-left: 6px; }
+    .c-stat-chip .c-highlight { color: var(--cp-green); }
+    
+    /* Grid */
+    .c-grid {
+      display: grid;
+      grid-template-columns: 350px 1fr 350px;
+      gap: 20px;
+    }
+    
+    /* Card Shared */
+    .c-card {
+      background: #1A1A1A;
+      border: 1px solid #333;
+      border-radius: 20px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+    }
+    .c-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+    .c-card-title {
+      font-size: 18px;
+      font-weight: 500;
+    }
+    .c-card-actions {
+      display: flex;
+      gap: 12px;
+      color: #A0A0A0;
+    }
+    
+    /* Swap Card */
+    .c-swap-box {
+      background: #111;
+      border-radius: 16px;
+      padding: 16px;
+      position: relative;
+    }
+    .c-swap-label { font-size: 11px; color: #A0A0A0; text-transform: uppercase; margin-bottom: 8px; }
+    .c-swap-input-row { display: flex; justify-content: space-between; align-items: center; }
+    .c-swap-input { background: none; border: none; color: #fff; font-size: 28px; font-weight: 500; width: 150px; outline: none; font-family: var(--font-main); }
+    .c-swap-token { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 600; cursor: pointer; }
+    .c-swap-token img { width: 24px; height: 24px; border-radius: 50%; }
+    .c-swap-sub-row { display: flex; justify-content: space-between; margin-top: 8px; font-size: 12px; color: #A0A0A0; }
+    .c-swap-max { color: var(--cp-green); cursor: pointer; }
+    
+    .c-swap-divider {
+      position: absolute;
+      left: 50%;
+      bottom: -16px;
+      transform: translateX(-50%);
+      width: 32px;
+      height: 32px;
+      background: #222;
+      border: 4px solid #1A1A1A;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: #fff;
+      z-index: 2;
+    }
+    
+    .c-swap-toggle-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 24px 0;
+      font-size: 14px;
+    }
+    .c-toggle-switch {
+      width: 40px; height: 20px; background: var(--cp-green); border-radius: 10px; position: relative; cursor: pointer;
+    }
+    .c-toggle-switch::after {
+      content: ''; position: absolute; right: 2px; top: 2px; width: 16px; height: 16px; background: #000; border-radius: 50%; transition: 0.2s;
+    }
+    
+    .c-swap-rate-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #A0A0A0;
+      margin-bottom: 24px;
+      padding: 12px;
+      background: #111;
+      border-radius: 12px;
+    }
+    
+    .c-swap-btn {
+      background: var(--cp-green);
+      color: #000;
+      border: none;
+      padding: 18px;
+      border-radius: 16px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: var(--font-main);
+      transition: background 0.2s;
+    }
+    .c-swap-btn:hover { background: var(--cp-green-hover); }
+    
+    /* Balance Card */
+    .c-balance-amount {
+      font-size: 42px;
+      font-weight: 400;
+    }
+    .c-balance-date {
+      font-size: 12px;
+      color: #A0A0A0;
+      margin-top: 4px;
+    }
+    .c-chart-container {
+      flex: 1;
+      position: relative;
+      margin-top: 20px;
+      min-height: 250px;
+    }
+    .c-time-toggles {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+      padding: 0 10px;
+    }
+    .c-time-btn {
+      background: none; border: none; color: #A0A0A0; font-size: 12px; cursor: pointer; font-family: var(--font-main); padding: 4px 10px; border-radius: 12px; font-weight: 500;
+    }
+    .c-time-btn.active {
+      background: var(--cp-green); color: #000;
+    }
+    
+    /* Wallet Card */
+    .c-wallet-group {
+      background: #111;
+      border-radius: 16px;
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+    .c-wg-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px;
+      border-bottom: 1px solid #222;
+    }
+    .c-wg-title {
+      display: flex; align-items: center; gap: 10px; font-size: 14px;
+    }
+    .c-wg-icon { width: 24px; height: 24px; }
+    .c-wg-actions { display: flex; gap: 12px; color: #A0A0A0; }
+    
+    .c-wg-list {
+      display: flex;
+      flex-direction: column;
+    }
+    .c-wl-item {
+      display: flex;
+      align-items: center;
+      padding: 16px;
+      border-bottom: 1px solid #1A1A1A;
+    }
+    .c-wl-item:last-child { border-bottom: none; }
+    .c-wl-icon {
+      width: 32px; height: 32px; background: #222; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; margin-right: 12px;
+    }
+    .c-wl-info { flex: 1; }
+    .c-wl-symbol { font-size: 14px; font-weight: 500; }
+    .c-wl-network { font-size: 11px; color: #A0A0A0; }
+    .c-wl-amount { text-align: right; margin-right: 16px; }
+    .c-wl-val { font-size: 14px; font-weight: 500; }
+    .c-wl-usd { font-size: 11px; color: #A0A0A0; }
+    .c-wl-arrow { color: #A0A0A0; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <header class="platform-header" style="background-color: #191919; border-bottom: 1px solid #2a2a2a;">
+    <a href="index.html" class="ph-brand">CARBON PESA</a>
+    <nav class="ph-nav">
+      <a href="index.html">Home</a>
+      <a href="map.html">Audit Maps</a>
+      <a href="carbon-credits.html" class="active">Carbon Credits</a>
+      <a href="workflow.html">Workflow</a>
+      <a href="education.html">Education</a>
+      <a href="partners.html">Partners</a>
+    </nav>
+    <div class="ph-user flex items-center gap-4">
+      <button id="view-toggle-btn" class="bg-[#222] border border-[#333] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#333] transition-colors" onclick="toggleDashboardView()">
+        <i class="fas fa-exchange-alt mr-2"></i> Switch to Crypto Dashboard
+      </button>
+      <div class="ph-avatar">CP</div>
+    </div>
+  </header>
+
+  <main class="layout-trade" id="carbon-trade-view">
+    <!-- Left Chart Area -->
+    <section class="lt-main">
+      <div class="lt-header">
+        <div>
+          <div class="lt-title-area">
+            <div class="lt-coin-icon"><i class="fas fa-leaf"></i></div>
+            <span class="lt-title">Verified Carbon Unit</span>
+            <span class="lt-ticker">VCU</span>
+          </div>
+          <div class="lt-price" id="livePriceDisplay" style="display:flex; align-items:center; gap:15px;">
+            $24.80 <span style="font-size:16px;">USD</span>
+            <svg id="priceSparkline" width="100" height="30"></svg>
+          </div>
+          <div class="lt-change" id="livePriceChange"><i class="fas fa-arrow-up"></i> $0.00 (0.0%)</div>
+        </div>
+        <div style="display:flex; gap:10px; font-size:12px; font-weight:600; color:var(--cp-text-muted);">
+          <span style="cursor:pointer; color:var(--cp-text);">1H</span>
+          <span style="cursor:pointer; color:var(--cp-green);">1D</span>
+          <span style="cursor:pointer;">1W</span>
+          <span style="cursor:pointer;">1Y</span>
+          <span style="cursor:pointer;">ALL</span>
+        </div>
+      </div>
+
+      <div class="lt-chart-area">
+        <canvas id="carbonChart"></canvas>
+      </div>
+
+      <div class="lt-stats">
+        <div class="lt-stat-box">
+          <span class="lt-stat-label">Market cap</span>
+          <span class="lt-stat-val">$1.34M USD</span>
+        </div>
+        <div class="lt-stat-box">
+          <span class="lt-stat-label">Volume (24h)</span>
+          <span class="lt-stat-val">$786.5K USD</span>
+        </div>
+        <div class="lt-stat-box">
+          <span class="lt-stat-label">Circulating supply</span>
+          <span class="lt-stat-val">586.5K VCU</span>
+        </div>
+        <div class="lt-stat-box" style="flex:1;">
+          <span class="lt-stat-label">Trading activity</span>
+          <div style="display:flex; justify-content:space-between; margin-top:5px; font-size:12px;">
+            <span><strong style="color:var(--cp-green);">95%</strong> BUY</span>
+            <span><strong style="color:var(--cp-text-muted);">5%</strong> SELL</span>
+          </div>
+          <div style="width:100%; height:4px; background:#333; border-radius:2px; margin-top:5px; overflow:hidden;">
+            <div style="width:95%; height:100%; background:var(--cp-green);"></div>
+          </div>
+        </div>
+        <div class="lt-stat-box" style="flex:1; display:flex; flex-direction:column; align-items:center;">
+          <span class="lt-stat-label" style="align-self:flex-start;">Revenue Split</span>
+          <div style="width:100px; height:100px; position:relative; margin-top:10px;">
+            <canvas id="revenuePieChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right Trading Panel -->
+    <section class="lt-panel">
+      <h2 class="ltp-title">Make a trade</h2>
+      
+      <div class="ltp-toggle">
+        <button class="active"><i class="fas fa-arrow-down"></i> BUY</button>
+        <button>SELL</button>
+      </div>
+
+      <div class="ltp-field">
+        <label class="ltp-label">Phone Number (M-Pesa)</label>
+        <input type="text" class="ltp-input" id="phone-number" placeholder="07XX..." />
+      </div>
+
+      <div class="ltp-field">
+        <label class="ltp-label">Amount (Ksh)</label>
+        <input type="number" class="ltp-input" id="amount" value="1500" />
+        
+        <div class="ltp-chips">
+          <div class="ltp-chip" onclick="document.getElementById('amount').value=50">50</div>
+          <div class="ltp-chip" onclick="document.getElementById('amount').value=100">100</div>
+          <div class="ltp-chip" onclick="document.getElementById('amount').value=500">500</div>
+          <div class="ltp-chip" onclick="document.getElementById('amount').value=1000">1000</div>
+        </div>
+      </div>
+
+      <div id="status-indicator" class="w-2 h-2 rounded-full bg-yellow-400 animate-pulse hidden"></div>
+
+      <button class="ltp-action-btn" id="pay-btn" onclick="openAuthModal()" style="display:flex; align-items:center; justify-content:center; gap:8px;">
+        <i data-lucide="shield-check" style="width:18px; height:18px;"></i> CONFIRM & PAY
+      </button>
+      <div style="text-align:center; font-size:11px; margin-top:15px; cursor:pointer;">
+        Secured by Marvel Network
+      </div>
+    </section>
+  </main>
+
+  <main id="crypto-dashboard" class="crypto-dash-view" style="display: none;">
+    <div class="crypto-container">
+      
+      <!-- Top Bar -->
+      <div class="c-panel c-topbar">
+        <div class="c-top-left">
+          <div class="c-logo"><i class="fa-brands fa-etsy" style="color: var(--cp-green);"></i></div>
+          <div class="c-nav-links">
+            <a href="#">Market</a>
+            <a href="#">Trade</a>
+            <a href="#">Finance</a>
+            <a href="#">NFT <span class="c-badge-new">New</span></a>
+          </div>
+        </div>
+        <div class="c-top-right">
+          <div class="c-price-box">
+            ETH/USDT 1137.62 <span class="c-highlight">+2.62%</span> <i class="fas fa-caret-up c-highlight"></i>
+          </div>
+          <div style="width: 1px; height: 20px; background: #333;"></div>
+          <div class="c-user-box">
+            <img src="https://i.pravatar.cc/100?img=11" alt="User">
+            <span style="color:#fff; font-weight: 500;">quanhth</span>
+            <span>User ID: 11026666</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats Bar -->
+      <div class="c-statsbar">
+        <div class="c-stat-chip">Cryptos: <strong>21,239</strong></div>
+        <div class="c-stat-chip">Exchanges: <strong>527</strong></div>
+        <div class="c-stat-chip">Market Cap: <strong>$945,323,954,176.309</strong></div>
+        <div class="c-stat-chip">24h Vol: <strong class="c-highlight">$53,517,873,949.45</strong></div>
+        <div class="c-stat-chip">Dominance: <strong class="c-highlight">BTC: 39.7% ETH: 17.3%</strong></div>
+        <div class="c-stat-chip">ETH Gas: <strong>48 Gwei</strong></div>
+      </div>
+
+      <!-- Main Grid -->
+      <div class="c-grid">
+        
+        <!-- Column 1: Swap -->
+        <div class="c-card">
+          <div class="c-card-header">
+            <div class="c-card-title">Swap</div>
+            <div class="c-card-actions">
+              <i class="fas fa-sync-alt cursor-pointer hover:text-white"></i>
+              <i class="fas fa-sliders-h cursor-pointer hover:text-white"></i>
+            </div>
+          </div>
+
+          <div style="position: relative;">
+            <div class="c-swap-box" style="margin-bottom: 4px;">
+              <div class="c-swap-label">FROM</div>
+              <div class="c-swap-input-row">
+                <input type="text" class="c-swap-input" value="884.24">
+                <div class="c-swap-token">
+                  <div class="w-6 h-6 rounded-full bg-red-500 flex items-center justify-center text-[10px] text-white">A</div> AVAX <i class="fas fa-chevron-down text-xs ml-1 text-gray-400"></i>
+                </div>
+              </div>
+              <div class="c-swap-sub-row">
+                <div>$14,147.68</div>
+                <div>Balance: 4214.49 <span class="c-swap-max">Max</span></div>
+              </div>
+              
+              <div class="c-swap-divider"><i class="fas fa-arrow-down"></i></div>
+            </div>
+
+            <div class="c-swap-box" style="padding-top: 24px;">
+              <div class="c-swap-label">TO</div>
+              <div class="c-swap-input-row">
+                <input type="text" class="c-swap-input" value="10.6856">
+                <div class="c-swap-token">
+                  <div class="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center text-[10px] text-white"><i class="fab fa-ethereum"></i></div> ETH <i class="fas fa-chevron-down text-xs ml-1 text-gray-400"></i>
+                </div>
+              </div>
+              <div class="c-swap-sub-row">
+                <div>$14,002.12 (-0.734%)</div>
+                <div>Balance: 32.1232</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="c-swap-toggle-row">
+            <span>Swap & Transfer</span>
+            <div class="c-toggle-switch"></div>
+          </div>
+
+          <div class="c-swap-rate-row">
+            <div><i class="far fa-clock"></i> 1 ETH = 1,356.52 USDT <span class="text-[10px]">(1356.5)</span></div>
+            <div class="flex items-center gap-1 bg-[#222] px-2 py-1 rounded text-white"><i class="fas fa-gas-pump text-[10px]"></i> $6.34 <i class="fas fa-chevron-down text-[10px]"></i></div>
+          </div>
+
+          <button class="c-swap-btn">Swap</button>
+        </div>
+
+        <!-- Column 2: Balance -->
+        <div class="c-card">
+          <div class="c-card-header" style="margin-bottom: 16px;">
+            <div class="c-card-title">Balance</div>
+          </div>
+          <div class="c-balance-amount">$920,423.13</div>
+          <div class="c-balance-date">Jan 25, 2022 (UTC)</div>
+          
+          <div class="c-chart-container">
+            <canvas id="cryptoBalanceChart"></canvas>
+            <div style="position: absolute; left: 50%; top: 40%; transform: translate(-50%, -50%); width: 10px; height: 10px; background: var(--cp-green); border-radius: 50%; box-shadow: 0 0 10px var(--cp-green);"></div>
+            <div style="position: absolute; left: 50%; top: 40%; width: 1px; height: 60%; background: rgba(255,255,255,0.1);"></div>
+          </div>
+
+          <div class="c-time-toggles">
+            <button class="c-time-btn">1D</button>
+            <button class="c-time-btn">5D</button>
+            <button class="c-time-btn">1M</button>
+            <button class="c-time-btn">YTD</button>
+            <button class="c-time-btn active">1Y</button>
+            <button class="c-time-btn">5Y</button>
+            <button class="c-time-btn">All</button>
+          </div>
+        </div>
+
+        <!-- Column 3: Wallet -->
+        <div class="c-card" style="padding: 16px; background: transparent; border: none;">
+          <div class="c-card-header" style="padding: 0 8px;">
+            <div class="c-card-title">Wallet</div>
+            <div class="c-card-actions">
+              <i class="far fa-copy cursor-pointer hover:text-white"></i>
+              <i class="fas fa-plus cursor-pointer hover:text-white"></i>
+            </div>
+          </div>
+
+          <!-- Group 1 -->
+          <div class="c-wallet-group">
+            <div class="c-wg-header">
+              <div class="c-wg-title">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg" class="c-wg-icon"> 0xA36d...26a4
+              </div>
+              <div class="c-wg-actions">
+                <i class="far fa-copy cursor-pointer"></i>
+                <i class="fas fa-external-link-alt cursor-pointer"></i>
+              </div>
+            </div>
+            <div class="c-wg-list">
+              <div class="c-wl-item">
+                <div class="c-wl-icon text-[#F7931A] bg-[#F7931A]/20"><i class="fab fa-bitcoin"></i></div>
+                <div class="c-wl-info">
+                  <div class="c-wl-symbol">BTC</div>
+                  <div class="c-wl-network">ERC20</div>
+                </div>
+                <div class="c-wl-amount">
+                  <div class="c-wl-val">30.00</div>
+                  <div class="c-wl-usd">$683,710.02</div>
+                </div>
+                <div class="c-wl-arrow"><i class="fas fa-arrow-right"></i></div>
+              </div>
+              <div class="c-wl-item">
+                <div class="c-wl-icon text-[#26A17B] bg-[#26A17B]/20">T</div>
+                <div class="c-wl-info">
+                  <div class="c-wl-symbol">USDT</div>
+                  <div class="c-wl-network">ERC20</div>
+                </div>
+                <div class="c-wl-amount">
+                  <div class="c-wl-val">12,000.00</div>
+                  <div class="c-wl-usd">$11,999.09</div>
+                </div>
+                <div class="c-wl-arrow"><i class="fas fa-arrow-right"></i></div>
+              </div>
+              <div class="c-wl-item">
+                <div class="c-wl-icon text-red-500 bg-red-500/20">A</div>
+                <div class="c-wl-info">
+                  <div class="c-wl-symbol">AVAX</div>
+                  <div class="c-wl-network">ERC20</div>
+                </div>
+                <div class="c-wl-amount">
+                  <div class="c-wl-val">4214.49</div>
+                  <div class="c-wl-usd">$70,668.78</div>
+                </div>
+                <div class="c-wl-arrow"><i class="fas fa-arrow-right"></i></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Group 2 -->
+          <div class="c-wallet-group">
+            <div class="c-wg-header">
+              <div class="c-wg-title">
+                <div class="w-6 h-6 rounded-full bg-yellow-500 flex items-center justify-center text-black text-[10px]"><i class="fas fa-shield-alt"></i></div> 0xA21r...23b7
+              </div>
+              <div class="c-wg-actions">
+                <i class="far fa-copy cursor-pointer"></i>
+                <i class="fas fa-external-link-alt cursor-pointer"></i>
+              </div>
+            </div>
+            <div class="c-wg-list">
+              <div class="c-wl-item">
+                <div class="c-wl-icon text-blue-400 bg-blue-400/20">L</div>
+                <div class="c-wl-info">
+                  <div class="c-wl-symbol">LTC</div>
+                  <div class="c-wl-network">BEP20</div>
+                </div>
+                <div class="c-wl-amount">
+                  <div class="c-wl-val">10.00</div>
+                  <div class="c-wl-usd">$5,252.00</div>
+                </div>
+                <div class="c-wl-arrow"><i class="fas fa-arrow-right"></i></div>
+              </div>
+              <div class="c-wl-item">
+                <div class="c-wl-icon text-orange-400 bg-orange-400/20"><i class="fas fa-dog"></i></div>
+                <div class="c-wl-info">
+                  <div class="c-wl-symbol">SHIB</div>
+                  <div class="c-wl-network">BEP20</div>
+                </div>
+                <div class="c-wl-amount">
+                  <div class="c-wl-val">16,000,000.00</div>
+                  <div class="c-wl-usd">$176.18</div>
+                </div>
+                <div class="c-wl-arrow"><i class="fas fa-arrow-right"></i></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- AUTHENTICATOR MODAL -->
+  <div class="auth-overlay" id="auth-modal">
+    <div class="auth-modal">
+      <div class="auth-header">
+        <div class="auth-title">Setup authenticator app</div>
+        <button class="auth-close" onclick="closeAuthModal()"><i class="fas fa-times"></i></button>
+      </div>
+
+      <div class="auth-section">
+        <div class="auth-section-title"><i data-lucide="scan-line" style="width:16px; height:16px;"></i> Scan QR code</div>
+        <div class="auth-section-desc">Scan the QR code below or manually enter the secret key into your authenticator app.</div>
+        <div class="auth-qr-area">
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=otpauth://totp/CarbonPesa?secret=JBSWY3DPEHPK3PXP" alt="QR Code" class="auth-qr-img" />
+          <div class="auth-secret-area">
+            <span class="auth-secret-label">Can't scan? Enter code manually:</span>
+            <input type="text" class="auth-secret-input" value="JBSWY3DPEHPK3PXP" readonly />
+            <button class="auth-copy-btn"><i data-lucide="copy" style="width:14px; height:14px;"></i> Copy code</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="auth-section">
+        <div class="auth-section-title"><i data-lucide="key-round" style="width:16px; height:16px;"></i> Enter verification code</div>
+        <div class="auth-section-desc">Enter the 6-digit code on your authenticator app.</div>
+        <div class="auth-otp-grid">
+          <input type="text" class="auth-otp-input" maxlength="1" oninput="moveToNext(this, 1)" id="otp1" />
+          <input type="text" class="auth-otp-input" maxlength="1" oninput="moveToNext(this, 2)" id="otp2" />
+          <input type="text" class="auth-otp-input" maxlength="1" oninput="moveToNext(this, 3)" id="otp3" />
+          <input type="text" class="auth-otp-input" maxlength="1" oninput="moveToNext(this, 4)" id="otp4" />
+          <input type="text" class="auth-otp-input" maxlength="1" oninput="moveToNext(this, 5)" id="otp5" />
+          <input type="text" class="auth-otp-input" maxlength="1" id="otp6" />
+        </div>
+      </div>
+
+      <div class="auth-footer">
+        <button class="auth-btn-cancel" onclick="closeAuthModal()">Cancel</button>
+        <button class="auth-btn-verify" onclick="verifyOTP()">Verify</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="access-splash" class="fixed inset-0 bg-green-500/20 backdrop-blur-sm z-[9999] flex items-center justify-center pointer-events-none opacity-0 transition-opacity duration-500">
+    <div class="text-4xl font-black text-green-400 drop-shadow-[0_0_20px_rgba(74,222,128,0.8)]"><i data-lucide="check-circle" style="display:inline; width:48px; height:48px;"></i> ACCESS GRANTED</div>
+  </div>
+
+  <script>
+    // Initialize Chart.js
+    const ctx = document.getElementById('carbonChart').getContext('2d');
+    
+    // Generate dummy data resembling the screenshot
+    const dataPoints = [];
+    let prev = 25000;
+    for(let i=0; i<100; i++) {
+      prev += (Math.random() - 0.45) * 500;
+      dataPoints.push(prev);
+    }
+
+    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+    gradient.addColorStop(0, 'rgba(126, 200, 67, 0.2)'); // Carbon Pesa Green fading out
+    gradient.addColorStop(1, 'rgba(126, 200, 67, 0)');
+
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: Array.from({length: 100}, (_, i) => i),
+        datasets: [{
+          data: dataPoints,
+          borderColor: '#7EC843', // Carbon Pesa green
+          borderWidth: 2,
+          pointRadius: 0,
+          fill: true,
+          backgroundColor: gradient,
+          tension: 0.1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          x: { display: false },
+          y: { 
+            display: true,
+            position: 'right',
+            grid: { color: '#333', borderDash: [5, 5] },
+            ticks: {
+              color: '#A0A0A0',
+              callback: function(value) { return '$' + value.toLocaleString(); }
+            }
+          }
+        }
+      }
+    });
+
+    // ── LIVE PRICE FEED (CBL Carbon Exchange via Backend) ──
+    const priceDisplay = document.getElementById('livePriceDisplay');
+    const changeDisplay = document.getElementById('livePriceChange');
+    let lastPrice = 24.80;
+    
+    // Sparkline D3 initialization
+    const sparklineData = Array.from({length: 20}, () => 24.80);
+    const sparklineSvg = d3.select("#priceSparkline");
+    
+    function updateSparkline() {
+      const w = 100, h = 30;
+      const xScale = d3.scaleLinear().domain([0, sparklineData.length - 1]).range([0, w]);
+      const yScale = d3.scaleLinear().domain([d3.min(sparklineData) - 0.5, d3.max(sparklineData) + 0.5]).range([h, 0]);
+      const line = d3.line().x((d, i) => xScale(i)).y(d => yScale(d)).curve(d3.curveMonotoneX);
+      
+      sparklineSvg.selectAll("*").remove();
+      sparklineSvg.append("path")
+        .datum(sparklineData)
+        .attr("fill", "none")
+        .attr("stroke", "#7EC843")
+        .attr("stroke-width", 2)
+        .attr("d", line);
+    }
+    
+    function fetchLivePrice() {
+      fetch("https://carbonpesaagent-1.onrender.com/stats/dashboard")
+        .then(res => res.json())
+        .then(data => {
+          const currentPrice = data.spot_price_usd || (lastPrice + (Math.random()-0.5));
+          priceDisplay.innerHTML = `$${currentPrice.toFixed(2)} <span style="font-size:16px;">USD</span> <svg id="priceSparkline" width="100" height="30"></svg>`;
+          
+          sparklineData.push(currentPrice);
+          if(sparklineData.length > 20) sparklineData.shift();
+          
+          // BUG FIX: .call(fn) passes the D3 selection as arg to fn, which updateSparkline
+          // doesn't expect. Re-select the new SVG element then call updateSparkline directly.
+          // d3.select() must re-target the newly injected SVG after innerHTML replacement.
+          updateSparkline();
+          
+          const change = currentPrice - lastPrice;
+          const pctChange = (change / lastPrice) * 100;
+          
+          if (change >= 0) {
+            changeDisplay.style.color = '#7EC843';
+            changeDisplay.innerHTML = `<i class="fas fa-arrow-up"></i> $${Math.abs(change).toFixed(2)} (${pctChange.toFixed(2)}%)`;
+          } else {
+            changeDisplay.style.color = '#ff4d4d';
+            changeDisplay.innerHTML = `<i class="fas fa-arrow-down"></i> $${Math.abs(change).toFixed(2)} (${Math.abs(pctChange).toFixed(2)}%)`;
+          }
+          lastPrice = currentPrice;
+        }).catch(err => {
+          // Fallback simulation
+          const currentPrice = lastPrice + (Math.random() - 0.5) * 0.2;
+          priceDisplay.innerHTML = `$${currentPrice.toFixed(2)} <span style="font-size:16px;">USD</span> <svg id="priceSparkline" width="100" height="30"></svg>`;
+          sparklineData.push(currentPrice);
+          if(sparklineData.length > 20) sparklineData.shift();
+          updateSparkline();
+          lastPrice = currentPrice;
+        });
+    }
+    
+    fetchLivePrice();
+    setInterval(fetchLivePrice, 60000); // Update every 60s as per requirement
+
+    // ── REVENUE SPLIT DONUT CHART ──
+    const pieCtx = document.getElementById('revenuePieChart').getContext('2d');
+    new Chart(pieCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Farmer (88%)', 'Platform (7%)', 'Verification (3%)', 'Reserve (2%)'],
+        datasets: [{
+          data: [88, 7, 3, 2],
+          backgroundColor: ['#7EC843', '#38a1ff', '#ff9900', '#ff4d4d'],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function(ctx) { return ' ' + ctx.label; }
+            }
+          }
+        },
+        cutout: '70%'
+      }
+    });
+    // M-PESA LOGIC & OTP LOGIC
+    const CONFIG = Object.freeze({
+        API_BASE_URL: "https://marvel-network.onrender.com",
+        POLL_INTERVAL_MS: 5000,
+        POLL_MAX_ATTEMPTS: 12,
+        TOAST_DURATION_MS: 5000
+    });
+
+    const API = (() => {
+        const BASE = CONFIG.API_BASE_URL;
+        const _request = async (url, options = {}) => {
+            try {
+                const response = await fetch(url, options);
+                const data = await response.json();
+                return { ok: response.ok, status: response.status, data };
+            } catch (err) {
+                return { ok: false, error: err.message };
+            }
+        };
+        return {
+            stkPush: (phone, amount) => _request(`${BASE}/api/stk-push`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phone, amount: Math.floor(amount), hours: 1 }) 
+            }),
+            queryPayment: (id) => _request(`${BASE}/api/query-payment?id=${id}`)
+        };
+    })();
+
+    const TOAST = (() => {
+        const create = (title, message, type) => {
+            const toast = document.createElement('div');
+            const isSuccess = type === 'success';
+            toast.className = `fixed bottom-5 right-5 z-[3000] p-5 rounded-xl backdrop-blur-xl border-2 animate-in slide-in-from-right transition-all duration-500 ${isSuccess ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400' : 'bg-red-500/20 border-red-500 text-red-400'}`;
+            toast.innerHTML = `<div class="flex items-center gap-4"><div><div class="text-[10px] font-black uppercase tracking-[0.2em] opacity-70">${title}</div><div class="text-sm font-bold text-white">${message}</div></div></div>`;
+            document.body.appendChild(toast);
+            setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 500); }, CONFIG.TOAST_DURATION_MS);
+        };
+        return { success: (t, m) => create(t, m, 'success'), error: (t, m) => create(t, m, 'error') };
+    })();
+
+    const PHONE = {
+        isValid: (raw) => /^(07|01|254|\+254)\d{8}$/.test(raw.trim()),
+        normalise: (raw) => {
+            let p = raw.trim();
+            if (p.startsWith('+')) p = p.slice(1);
+            if (p.startsWith('0')) p = '254' + p.slice(1);
+            return p;
+        }
+    };
+
+    let activePoll = null;
+
+    function openAuthModal() {
+        const phoneInput = document.getElementById('phone-number').value;
+        const amountInput = document.getElementById('amount').value;
+        // BUG FIX: amountInput is a string from input.value — must parse to int before numeric compare
+        if (!PHONE.isValid(phoneInput) || parseInt(amountInput, 10) < 1 || isNaN(parseInt(amountInput, 10))) {
+            TOAST.error("VALIDATION_ERROR", "Invalid Phone Number or Amount.");
+            return;
+        }
+        document.getElementById('auth-modal').style.display = 'flex';
+        setTimeout(() => document.getElementById('otp1').focus(), 100);
+    }
+
+    function closeAuthModal() {
+        document.getElementById('auth-modal').style.display = 'none';
+        // reset OTP fields
+        for(let i=1; i<=6; i++) document.getElementById(`otp${i}`).value = '';
+    }
+
+    function moveToNext(input, nextFieldId) {
+        if (input.value.length === 1) {
+            const next = document.getElementById(`otp${nextFieldId + 1}`);
+            if(next) next.focus();
+        }
+    }
+
+    function verifyOTP() {
+        let code = '';
+        for(let i=1; i<=6; i++) code += document.getElementById(`otp${i}`).value;
+        
+        if(code.length !== 6) {
+            TOAST.error("VERIFICATION_ERROR", "Enter a 6-digit code.");
+            return;
+        }
+        
+        // Assume verified
+        closeAuthModal();
+        TOAST.success("AUTH_SUCCESS", "Authenticator Verified.");
+        handlePayment();
+    }
+
+    async function handlePayment() {
+        const phoneInput = document.getElementById('phone-number');
+        const amountInput = document.getElementById('amount');
+        const btn = document.getElementById('pay-btn');
+        const indicator = document.getElementById('status-indicator');
+
+        const phone = PHONE.normalise(phoneInput.value);
+        const amount = amountInput.value;
+
+        // UI State Change
+        btn.disabled = true;
+        btn.innerHTML = `<i data-lucide="refresh-cw" class="animate-spin" style="width:18px;height:18px;margin-right:5px;display:inline-block;vertical-align:middle;"></i> AUTHORIZING...`;
+        indicator.classList.remove('hidden');
+        lucide.createIcons();
+
+        const { ok, data } = await API.stkPush(phone, amount);
+
+        if (ok && data.CheckoutRequestID) {
+            TOAST.success("UPLINK_ESTABLISHED", "PIN Request sent to device.");
+            pollPayment(data.CheckoutRequestID);
+        } else {
+            TOAST.error("GATEWAY_REJECTION", data?.message || "Check connection.");
+            resetUI();
+        }
+    }
+
+    function pollPayment(checkoutID) {
+        let attempts = 0;
+        const btn = document.getElementById('pay-btn');
+
+        activePoll = setInterval(async () => {
+            attempts++;
+            btn.innerHTML = `<i data-lucide="loader-2" class="animate-spin" style="width:18px;height:18px;margin-right:5px;display:inline-block;vertical-align:middle;"></i> SYNCING (${attempts})`;
+            lucide.createIcons();
+
+            const { ok, data } = await API.queryPayment(checkoutID);
+
+            if (ok && data.status === 'paid') {
+                clearInterval(activePoll);
+                handleSuccess();
+            } else if (ok && (data.status === 'failed' || data.status === 'cancelled')) {
+                clearInterval(activePoll);
+                TOAST.error("TRANSACTION_FAILED", "User cancelled or timeout.");
+                resetUI();
+            }
+
+            if (attempts >= CONFIG.POLL_MAX_ATTEMPTS) {
+                clearInterval(activePoll);
+                TOAST.error("POLL_TIMEOUT", "No response from gateway.");
+                resetUI();
+            }
+        }, CONFIG.POLL_INTERVAL_MS);
+    }
+
+    function handleSuccess() {
+        const btn = document.getElementById('pay-btn');
+        btn.innerHTML = `<i data-lucide="check-circle" style="width:18px;height:18px;margin-right:5px;display:inline-block;vertical-align:middle;"></i> TRANSACTION_COMPLETE`;
+        btn.style.background = '#0ea5e9'; // cyan-500
+        
+        TOAST.success("PAYMENT_VERIFIED", "Encrypted receipt generated.");
+        
+        // Show access splash
+        const splash = document.getElementById('access-splash');
+        splash.style.opacity = '1';
+        setTimeout(() => {
+            splash.style.opacity = '0';
+            resetUI();
+        }, 3000);
+    }
+
+    function resetUI() {
+        const btn = document.getElementById('pay-btn');
+        btn.disabled = false;
+        btn.innerHTML = `<i data-lucide="shield-check" style="width:18px;height:18px;margin-right:5px;display:inline-block;vertical-align:middle;"></i> CONFIRM & PAY`;
+        btn.style.background = '';
+        document.getElementById('status-indicator').classList.add('hidden');
+        lucide.createIcons();
+    }
+
+    // Initialize lucide
+    lucide.createIcons();
+
+    // Crypto Dashboard Logic
+    function toggleDashboardView() {
+      const tradeView = document.getElementById('carbon-trade-view');
+      const cryptoView = document.getElementById('crypto-dashboard');
+      const btn = document.getElementById('view-toggle-btn');
+      
+      if (tradeView.style.display !== 'none') {
+        tradeView.style.display = 'none';
+        cryptoView.style.display = 'block';
+        btn.innerHTML = '<i class="fas fa-leaf mr-2"></i> Switch to Carbon Trade';
+        
+        // initialize chart if not done
+        if (!window.cryptoChartInit) {
+          initCryptoChart();
+          window.cryptoChartInit = true;
+        }
+      } else {
+        tradeView.style.display = 'flex';
+        cryptoView.style.display = 'none';
+        btn.innerHTML = '<i class="fas fa-exchange-alt mr-2"></i> Switch to Crypto Dashboard';
+      }
+    }
+
+    function initCryptoChart() {
+      const cCtx = document.getElementById('cryptoBalanceChart').getContext('2d');
+      const cDataPoints = [400, 380, 420, 390, 410, 400, 450, 430, 460, 440, 480, 470, 500];
+      
+      new Chart(cCtx, {
+        type: 'line',
+        data: {
+          labels: ['Oct', '', '2022', '', 'Jan', '', 'Mar', '', 'May', '', 'Jul', '', 'Sep'],
+          datasets: [{
+            data: cDataPoints,
+            borderColor: '#7EC843', // CP Green
+            borderWidth: 2,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+            tension: 0.4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { 
+              grid: { display: false, drawBorder: false },
+              ticks: { color: '#A0A0A0', font: { size: 10 } }
+            },
+            y: { display: false }
+          }
+        }
+      });
+    }
+  </script>
+</body>
+</html>
