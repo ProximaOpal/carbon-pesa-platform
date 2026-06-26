@@ -1594,7 +1594,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   // Kick off the listener
-  startAgentSSEListener();
+  startAgentLongPoll();
 
   // ───────────────────────────────────────────────────────────────────
   // END AGENTIC WEBHOOK BLOCK
