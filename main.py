@@ -85,7 +85,7 @@ class MapContext(BaseModel):
 
 class CarbonPesaState(BaseModel):
     currentPage: str = "Unknown"
-    currentSlideIndex: int = Field(0, ge=0, le=4)
+    currentSlideIndex: int = Field(0)  # No range cap — AI/frontend may suggest any index
     currentSlideHeading: str = "MISSION"
     searchOpen: bool = False
     navMenuOpen: bool = False
@@ -96,6 +96,21 @@ class CarbonPesaState(BaseModel):
     lastAgentIntent: Optional[str] = None
     lastAgentPayload: Optional[Any] = None
     updatedAt: Optional[str] = None
+    _pending_agent_action: dict | None = None
+
+@app.post("/api/agent-action")
+async def set_agent_action(request: Request):
+    global _pending_agent_action
+    body = await request.json()
+    _pending_agent_action = body
+    return {"status": "queued"}
+
+@app.get("/api/agent-action")
+def get_agent_action():
+    global _pending_agent_action
+    action = _pending_agent_action
+    _pending_agent_action = None
+    return action or {}
 
     # allow extra fields without rejecting the request
     model_config = {"extra": "allow"}

@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (window.patchState) window.patchState({
         mapContext: { lat: parseFloat(c.lat.toFixed(5)), lng: parseFloat(c.lng.toFixed(5)), zoom: map.getZoom() }
       });
-    } catch (_) {}
+    } catch (_) { }
   }
   // Only attach auditMap listeners here; fieldMap listeners added after fieldMap is declared
   auditMap.on('moveend', () => _syncMapContext(auditMap));
@@ -102,9 +102,9 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.addEventListener('click', (e) => {
       const targetMapName = e.target.getAttribute('data-map'); // 'audit' or 'field'
       const layerName = e.target.getAttribute('data-layer');
-      
+
       const targetMap = targetMapName === 'audit' ? auditMap : fieldMap;
-      
+
       // Update UI active state
       const siblings = e.target.parentElement.querySelectorAll('.mls-btn');
       siblings.forEach(s => s.classList.remove('active'));
@@ -117,14 +117,14 @@ document.addEventListener('DOMContentLoaded', () => {
           targetMap.removeLayer(layer);
         }
       });
-      
+
       // We need fresh instances so layers aren't shared improperly if both maps use same
       let newLayer;
       if (layerName === 'satellite') newLayer = L.tileLayer(mapboxUrl, { maxZoom: 19 });
       if (layerName === 'terrain') newLayer = L.tileLayer(terrainUrl, { maxZoom: 13 });
       if (layerName === 'street') newLayer = L.tileLayer(streetUrl, { maxZoom: 19 });
       if (layerName === 'dark') newLayer = L.tileLayer(darkUrl, { maxZoom: 20 });
-      
+
       if (newLayer) newLayer.addTo(targetMap);
     });
   });
@@ -172,7 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ───────────────────────────────────────────────────────────────────
   const drawnItemsAudit = new L.FeatureGroup();
   auditMap.addLayer(drawnItemsAudit);
-  
+
   const drawnItemsField = new L.FeatureGroup();
   fieldMap.addLayer(drawnItemsField);
 
@@ -192,7 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (currentDrawHandler) {
       currentDrawHandler.disable();
     }
-    
+
     const drawOptions = {
       shapeOptions: {
         color: '#38a1ff', // Blue for carbon overlay
@@ -220,7 +220,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const layer = e.layer;
       const ctx = m === auditMap ? drawnItemsAudit : drawnItemsField;
       ctx.addLayer(layer);
-      
+
       // Calculate area if polygon
       if (type === 'polygon') {
         const latlngs = layer.getLatLngs()[0];
@@ -232,12 +232,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const farmModalOverlay = document.getElementById('farmModalOverlay');
         const farmRegistrationModal = document.getElementById('farmRegistrationModal');
         const frmArea = document.getElementById('frmArea');
-        
+
         if (farmRegistrationModal && farmModalOverlay) {
           farmModalOverlay.style.display = 'block';
           farmRegistrationModal.style.display = 'block';
           frmArea.textContent = `${hectares} ha`;
-          
+
           layer._tempGeoJSON = layer.toGeoJSON();
           layer._tempArea = hectares;
           window._pendingRegistrationLayer = layer;
@@ -257,17 +257,17 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   const frmRegisterBtn = document.getElementById('frmRegisterBtn');
-  if(frmRegisterBtn) {
+  if (frmRegisterBtn) {
     frmRegisterBtn.addEventListener('click', async () => {
       const name = document.getElementById('frmName').value;
       const layer = window._pendingRegistrationLayer;
-      if(!name || !layer) return showToast('Please provide a name.');
-      
+      if (!name || !layer) return showToast('Please provide a name.');
+
       showToast('Registering farm via backend...');
       try {
         const res = await fetch(`${API_BASE}/farms`, {
           method: 'POST',
-          headers: {'Content-Type': 'application/json'},
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             name: name,
             geometry: layer._tempGeoJSON.geometry,
@@ -284,7 +284,7 @@ document.addEventListener('DOMContentLoaded', () => {
           showToast('Farm registration failed.');
           closeFarmModal();
         }
-      } catch(e) {
+      } catch (e) {
         showToast('Error registering farm: ' + e.message);
         closeFarmModal();
       }
@@ -317,11 +317,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const lat = parseFloat(e.target.dataset.lat);
       const lng = parseFloat(e.target.dataset.lng);
       const zoom = parseInt(e.target.dataset.zoom);
-      
+
       document.getElementById('gotoLat').value = lat;
       document.getElementById('gotoLng').value = lng;
       document.getElementById('gotoZoom').value = zoom;
-      
+
       const ctx = getActiveMapContext();
       ctx.map.flyTo([lat, lng], zoom, { duration: 1.5 });
       showToast(`Flying to location...`);
@@ -337,7 +337,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function syncCoordsToPanel() {
     const ctx = getActiveMapContext();
     const center = ctx.map.getCenter();
-    if(gotoLat && gotoLng && document.activeElement !== gotoLat && document.activeElement !== gotoLng) {
+    if (gotoLat && gotoLng && document.activeElement !== gotoLat && document.activeElement !== gotoLng) {
       gotoLat.value = center.lat.toFixed(4);
       gotoLng.value = center.lng.toFixed(4);
       gotoZoom.value = ctx.map.getZoom();
@@ -363,8 +363,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const lat = parseFloat(gotoLat.value);
     const lng = parseFloat(gotoLng.value);
     if (!isNaN(lat) && !isNaN(lng)) {
-       const ctx = getActiveMapContext();
-       ctx.map.panTo([lat, lng]);
+      const ctx = getActiveMapContext();
+      ctx.map.panTo([lat, lng]);
     }
   }));
 
@@ -382,7 +382,7 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
     coordRowsContainer.appendChild(row);
   }
-  
+
   // Initialize with 3 rows (triangle minimum)
   addCoordRow(); addCoordRow(); addCoordRow();
   document.getElementById('addCoordRowBtn').addEventListener('click', addCoordRow);
@@ -392,23 +392,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const latInputs = document.querySelectorAll('.coord-lat');
     const lngInputs = document.querySelectorAll('.coord-lng');
     const name = document.getElementById('polyNameInput').value || 'Custom Zone';
-    
+
     let latlngs = [];
-    for(let i=0; i<latInputs.length; i++) {
+    for (let i = 0; i < latInputs.length; i++) {
       const lat = parseFloat(latInputs[i].value);
       const lng = parseFloat(lngInputs[i].value);
-      if(!isNaN(lat) && !isNaN(lng)) {
+      if (!isNaN(lat) && !isNaN(lng)) {
         latlngs.push([lat, lng]);
       }
     }
 
-    if(latlngs.length >= 3) {
+    if (latlngs.length >= 3) {
       const ctx = getActiveMapContext();
       // VM0047 v1.1 Logic: Automatically flag "Degraded Forest Land"
       const isEligible = Math.random() > 0.3; // Mock eligibility
       const polyColor = isEligible ? '#7EC843' : '#ff9900';
       const statusText = isEligible ? '<span style="color:#7EC843; font-weight:bold;">Eligible: Degraded Forest Land (VM0047 v1.1)</span>' : '<span style="color:#ff9900; font-weight:bold;">Ineligible: Intact Forest</span>';
-      
+
       const polygon = L.polygon(latlngs, { color: polyColor, weight: 2, fillColor: polyColor, fillOpacity: 0.3 });
       ctx.fg.addLayer(polygon);
       ctx.map.fitBounds(polygon.getBounds());
@@ -510,12 +510,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const active = data.find(u => u.status !== 'Offline') || data[0];
     if (active) {
       const el = id => document.getElementById(id);
-      if (el('tLat'))      el('tLat').textContent      = `${active.latitude.toFixed(4)}°`;
-      if (el('tLng'))      el('tLng').textContent      = `${active.longitude.toFixed(4)}°`;
-      if (el('tAlt'))      el('tAlt').textContent      = `${active.altitude} m`;
-      if (el('tSpeed'))    el('tSpeed').textContent    = `${active.speed} m/s`;
-      if (el('tWind'))     el('tWind').textContent     = active.wind;
-      if (el('tCO2'))      el('tCO2').textContent      = `${active.co2_level} ppm`;
+      if (el('tLat')) el('tLat').textContent = `${active.latitude.toFixed(4)}°`;
+      if (el('tLng')) el('tLng').textContent = `${active.longitude.toFixed(4)}°`;
+      if (el('tAlt')) el('tAlt').textContent = `${active.altitude} m`;
+      if (el('tSpeed')) el('tSpeed').textContent = `${active.speed} m/s`;
+      if (el('tWind')) el('tWind').textContent = active.wind;
+      if (el('tCO2')) el('tCO2').textContent = `${active.co2_level} ppm`;
       if (el('tHumidity')) el('tHumidity').textContent = `${active.humidity}%`;
     }
 
@@ -544,9 +544,9 @@ document.addEventListener('DOMContentLoaded', () => {
         console.warn('[Telemetry] API unreachable, using fallback:', err.message);
         renderUAVCards([
           { id: 'UAV-01 Alpha', status: 'Active scanning', battery: '82%', type: 'Thermal', latitude: -0.501, longitude: 35.414, altitude: 120, speed: 8, wind: 'NW 12km/h', co2_level: 412, humidity: 72 },
-          { id: 'UAV-02 Beta',  status: 'Return to base',  battery: '14%', type: 'LIDAR',   latitude: -0.505, longitude: 35.418, altitude: 110, speed: 5, wind: 'NW 10km/h', co2_level: 408, humidity: 71 },
-          { id: 'UAV-04 Delta',status: 'Active scanning', battery: '95%', type: 'Optical', latitude: -0.498, longitude: 35.412, altitude: 125, speed: 9, wind: 'NW 11km/h', co2_level: 415, humidity: 73 },
-          { id: 'Ground-Bot 1',status: 'Offline',          battery: '--',  type: 'Soil Sampler', latitude: -0.510, longitude: 35.410, altitude: 0, speed: 0, wind: 'None', co2_level: 420, humidity: 75 }
+          { id: 'UAV-02 Beta', status: 'Return to base', battery: '14%', type: 'LIDAR', latitude: -0.505, longitude: 35.418, altitude: 110, speed: 5, wind: 'NW 10km/h', co2_level: 408, humidity: 71 },
+          { id: 'UAV-04 Delta', status: 'Active scanning', battery: '95%', type: 'Optical', latitude: -0.498, longitude: 35.412, altitude: 125, speed: 9, wind: 'NW 11km/h', co2_level: 415, humidity: 73 },
+          { id: 'Ground-Bot 1', status: 'Offline', battery: '--', type: 'Soil Sampler', latitude: -0.510, longitude: 35.410, altitude: 0, speed: 0, wind: 'None', co2_level: 420, humidity: 75 }
         ]);
       });
   }
@@ -564,10 +564,10 @@ document.addEventListener('DOMContentLoaded', () => {
       document.querySelectorAll('.uav-card').forEach((card, i) => {
         if (!uavs[i]) return;
         let show = true;
-        if (filter === 'offline')  show = uavs[i].status === 'Offline';
-        if (filter === 'battery')  show = parseInt(uavs[i].battery) < 20;
+        if (filter === 'offline') show = uavs[i].status === 'Offline';
+        if (filter === 'battery') show = parseInt(uavs[i].battery) < 20;
         if (filter === 'problems') show = uavs[i].status !== 'Active scanning';
-        if (filter === 'live')     show = uavs[i].status === 'Active scanning';
+        if (filter === 'live') show = uavs[i].status === 'Active scanning';
         card.style.display = (show || filter === 'all') ? '' : 'none';
       });
     });
@@ -585,7 +585,7 @@ document.addEventListener('DOMContentLoaded', () => {
       document.querySelectorAll('.asub-tab').forEach(t => t.classList.remove('active'));
       tab.classList.add('active');
       const mode = tab.dataset.tab;
-      const left  = document.getElementById('auditLeft');
+      const left = document.getElementById('auditLeft');
       const right = document.getElementById('auditRight');
       if (mode === 'split') { left.style.flex = '1'; right.style.flex = '1'; }
       else { left.style.flex = ''; right.style.flex = ''; }
@@ -598,9 +598,9 @@ document.addEventListener('DOMContentLoaded', () => {
     showToast('🚨 Emergency alert dispatched to field team via Africa\'s Talking SMS!');
     fetch(`${API_BASE}/deforestation/alert`, {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({farm_id: activeFarmId})
-    }).catch(() => {});
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ farm_id: activeFarmId })
+    }).catch(() => { });
   }
   const emergencyBtnEl = document.getElementById('emergencyBtn');
   if (emergencyBtnEl) emergencyBtnEl.addEventListener('click', dispatchEmergencyAlert);
@@ -608,9 +608,9 @@ document.addEventListener('DOMContentLoaded', () => {
   if (sendAlertMiniEl) sendAlertMiniEl.addEventListener('click', () => {
     showToast('📡 NDVI anomaly alert dispatched via SMS!');
     fetch(`${API_BASE}/deforestation/alert`, {
-      method: 'POST', headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({farm_id: activeFarmId})
-    }).catch(() => {});
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ farm_id: activeFarmId })
+    }).catch(() => { });
   });
 
   // Audit map expand button
@@ -626,7 +626,7 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.addEventListener('click', () => {
       const cell = btn.closest('.data-cell');
       cell.classList.toggle('cell-expanded');
-      [subMap1].forEach(m => { try { m.invalidateSize(); } catch(e) {} });
+      [subMap1].forEach(m => { try { m.invalidateSize(); } catch (e) { } });
     });
   });
 
@@ -644,24 +644,24 @@ document.addEventListener('DOMContentLoaded', () => {
     'Fields': 'panelAudit',
     'Analytics': 'panelFinancials'
   };
-  
+
   document.querySelectorAll('.fas-icon').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.fas-icon').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       const title = btn.getAttribute('title');
       const targetPanelId = subPanels[title] || 'panelStress';
-      
+
       document.querySelectorAll('.fa-subpanel').forEach(p => {
         p.style.display = 'none';
         p.classList.remove('active');
       });
       const tp = document.getElementById(targetPanelId);
       if (tp) {
-          tp.style.display = 'flex';
-          tp.classList.add('active');
-          if(targetPanelId === 'panelAudit') fetchAuditHistory();
-          if(targetPanelId === 'panelFinancials') fetchFinancials();
+        tp.style.display = 'flex';
+        tp.classList.add('active');
+        if (targetPanelId === 'panelAudit') fetchAuditHistory();
+        if (targetPanelId === 'panelFinancials') fetchFinancials();
       }
       showToast(`📌 ${title || 'Panel'} activated.`);
     });
@@ -669,17 +669,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function fetchAuditHistory() {
     const list = document.getElementById('auditHistoryList');
-    if(!list) return;
+    if (!list) return;
     try {
       const res = await fetch(`${API_BASE}/audits`);
-      if(!res.ok) throw new Error('Failed to fetch audits');
+      if (!res.ok) throw new Error('Failed to fetch audits');
       const audits = await res.json();
-      
-      if(audits.length === 0) {
+
+      if (audits.length === 0) {
         list.innerHTML = `<div style="color:#888; padding:10px;">No audits found.</div>`;
         return;
       }
-      
+
       list.innerHTML = audits.map(a => `
         <div style="background:#222; padding:10px; border-radius:4px; margin-bottom:10px;">
           <div style="color:#7EC843; font-weight:bold; margin-bottom:5px;">✓ SUCCESS (${new Date(a.timestamp).toISOString().split('T')[0]})</div>
@@ -688,25 +688,25 @@ document.addEventListener('DOMContentLoaded', () => {
           <a href="#" style="color:#38a1ff; text-decoration:none; font-size:12px; display:inline-block; margin-top:5px;">View on Hedera Mirror Node ↗</a>
         </div>
       `).join('');
-    } catch(err) {
+    } catch (err) {
       console.error(err);
       list.innerHTML = `<div style="color:red; padding:10px;">Error loading audits.</div>`;
     }
   }
-  
+
   async function fetchFinancials() {
     const list = document.getElementById('financialsList');
-    if(!list) return;
+    if (!list) return;
     try {
       const res = await fetch(`${API_BASE}/payouts`);
-      if(!res.ok) throw new Error('Failed to fetch payouts');
+      if (!res.ok) throw new Error('Failed to fetch payouts');
       const payouts = await res.json();
-      
-      if(payouts.length === 0) {
+
+      if (payouts.length === 0) {
         list.innerHTML = `<div style="color:#888; padding:10px;">No payouts found.</div>`;
         return;
       }
-      
+
       list.innerHTML = payouts.map(p => `
         <div style="background:#222; padding:10px; border-radius:4px; display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
           <div>
@@ -718,7 +718,7 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
         </div>
       `).join('');
-    } catch(err) {
+    } catch (err) {
       console.error(err);
       list.innerHTML = `<div style="color:red; padding:10px;">Error loading financials.</div>`;
     }
@@ -757,9 +757,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const div = document.createElement('div');
       div.className = `stress-item ${idx === 0 ? 'active' : ''}`;
       div.innerHTML = `
-        <i class="fas fa-exclamation-triangle si-icon" style="color:${s.priority==='High'?'#ff4d4d':s.priority==='Medium'?'#ffa500':'#7EC843'}"></i>
+        <i class="fas fa-exclamation-triangle si-icon" style="color:${s.priority === 'High' ? '#ff4d4d' : s.priority === 'Medium' ? '#ffa500' : '#7EC843'}"></i>
         <div class="si-content">
-          <div class="si-title">${s.name} <span class="si-badge ${s.date==='New'?'new':''}">${s.date}</span></div>
+          <div class="si-title">${s.name} <span class="si-badge ${s.date === 'New' ? 'new' : ''}">${s.date}</span></div>
           <div class="si-desc">Carbon loss | ${s.area} | ${s.priority} | NDVI ${s.ndvi}</div>
         </div>
       `;
@@ -768,10 +768,10 @@ document.addEventListener('DOMContentLoaded', () => {
         div.classList.add('active');
         const popup = document.getElementById('stressPopup');
         popup.style.display = 'block';
-        document.getElementById('spCoords').textContent     = `${s.coords[0].toFixed(4)}°, ${s.coords[1].toFixed(4)}°`;
-        document.getElementById('spAreaDetail').textContent  = s.area;
-        document.getElementById('spNdvi').textContent        = s.ndvi;
-        document.getElementById('spDateDetail').textContent  = s.date === 'New' ? 'Today' : s.date;
+        document.getElementById('spCoords').textContent = `${s.coords[0].toFixed(4)}°, ${s.coords[1].toFixed(4)}°`;
+        document.getElementById('spAreaDetail').textContent = s.area;
+        document.getElementById('spNdvi').textContent = s.ndvi;
+        document.getElementById('spDateDetail').textContent = s.date === 'New' ? 'Today' : s.date;
         fieldMap.flyTo(s.coords, 16, { duration: 1.0 });
       });
       stressList.appendChild(div);
@@ -785,9 +785,9 @@ document.addEventListener('DOMContentLoaded', () => {
       .catch(err => {
         console.warn('[Stresses] API unreachable, using fallback:', err.message);
         renderStresses([
-          { name: 'Mau Zone 4',  area: '4.5 ac',  priority: 'High',   date: 'New',    ndvi: 0.31, coords: [-0.502, 35.416] },
-          { name: 'Sector 7B',   area: '12.0 ac', priority: 'Medium', date: 'Jul 2',  ndvi: 0.48, coords: [-0.506, 35.412] },
-          { name: 'Riparian 1',  area: '2.1 ac',  priority: 'Low',    date: 'Jul 14', ndvi: 0.61, coords: [-0.498, 35.418] }
+          { name: 'Mau Zone 4', area: '4.5 ac', priority: 'High', date: 'New', ndvi: 0.31, coords: [-0.502, 35.416] },
+          { name: 'Sector 7B', area: '12.0 ac', priority: 'Medium', date: 'Jul 2', ndvi: 0.48, coords: [-0.506, 35.412] },
+          { name: 'Riparian 1', area: '2.1 ac', priority: 'Low', date: 'Jul 14', ndvi: 0.61, coords: [-0.498, 35.418] }
         ]);
       });
   }
@@ -814,7 +814,7 @@ document.addEventListener('DOMContentLoaded', () => {
     showToast('Stress zone removed from monitoring list.');
   });
   document.getElementById('spIssueBtn').addEventListener('click', () => {
-    const issues = ['Carbon Depletion','Soil Erosion','Canopy Loss','Invasive Species','Drought Stress'];
+    const issues = ['Carbon Depletion', 'Soil Erosion', 'Canopy Loss', 'Invasive Species', 'Drought Stress'];
     const cur = document.getElementById('spIssueBtn').textContent.trim();
     const idx = issues.findIndex(i => cur.includes(i));
     const next = issues[(idx + 1) % issues.length];
@@ -824,7 +824,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Stress meta row — date & layer pickers
   document.querySelector('.sm-date-btn').addEventListener('click', () => {
-    const dates = ['28 Aug 2024','15 Sep 2024','01 Oct 2024','Latest'];
+    const dates = ['28 Aug 2024', '15 Sep 2024', '01 Oct 2024', 'Latest'];
     const btn = document.querySelector('.sm-date-btn');
     const idx = dates.findIndex(d => btn.textContent.includes(d.slice(0, 3)));
     const next = dates[(idx + 1) % dates.length];
@@ -832,7 +832,7 @@ document.addEventListener('DOMContentLoaded', () => {
     showToast(`Viewing: ${next}`);
   });
   document.querySelector('.sm-ndvi-btn').addEventListener('click', () => {
-    const layers = ['NDVI','EVI','SAVI','NBR','SAR'];
+    const layers = ['NDVI', 'EVI', 'SAVI', 'NBR', 'SAR'];
     const btn = document.querySelector('.sm-ndvi-btn');
     const cur = btn.textContent.trim().split(' ')[0];
     const idx = layers.indexOf(cur);
@@ -851,66 +851,66 @@ document.addEventListener('DOMContentLoaded', () => {
     attributionControl: false
   });
   L.control.zoom({ position: 'topright' }).addTo(thermalMap);
-  
+
   // Base satellite layer
   const baseSatellite = L.tileLayer(mapboxUrl, { maxZoom: 19 }).addTo(thermalMap);
-  
+
   function generateDenseHeatmap(centerLat, centerLng, radiusDegrees, count, colorScheme) {
-      if (typeof L.heatLayer === 'undefined') return L.featureGroup();
-      const points = [];
-      for (let i = 0; i < count; i++) {
-          const lat = centerLat + (Math.random() - 0.5) * radiusDegrees;
-          const lng = centerLng + (Math.random() - 0.5) * radiusDegrees;
-          // Intensity based on some clustered logic for realism
-          const dist1 = Math.sqrt(Math.pow(lat - centerLat, 2) + Math.pow(lng - centerLng, 2));
-          const dist2 = Math.sqrt(Math.pow(lat - (centerLat + 0.005), 2) + Math.pow(lng - (centerLng - 0.005), 2));
-          let intensity = 1.0 - (Math.min(dist1, dist2) / (radiusDegrees / 2.5));
-          intensity += (Math.random() * 0.4 - 0.2); // noise
-          intensity = Math.max(0.1, Math.min(1.0, intensity));
-          points.push([lat, lng, intensity]);
-      }
-      return L.heatLayer(points, {
-          radius: 20, 
-          blur: 15, 
-          maxZoom: 16, 
-          gradient: colorScheme
-      });
+    if (typeof L.heatLayer === 'undefined') return L.featureGroup();
+    const points = [];
+    for (let i = 0; i < count; i++) {
+      const lat = centerLat + (Math.random() - 0.5) * radiusDegrees;
+      const lng = centerLng + (Math.random() - 0.5) * radiusDegrees;
+      // Intensity based on some clustered logic for realism
+      const dist1 = Math.sqrt(Math.pow(lat - centerLat, 2) + Math.pow(lng - centerLng, 2));
+      const dist2 = Math.sqrt(Math.pow(lat - (centerLat + 0.005), 2) + Math.pow(lng - (centerLng - 0.005), 2));
+      let intensity = 1.0 - (Math.min(dist1, dist2) / (radiusDegrees / 2.5));
+      intensity += (Math.random() * 0.4 - 0.2); // noise
+      intensity = Math.max(0.1, Math.min(1.0, intensity));
+      points.push([lat, lng, intensity]);
+    }
+    return L.heatLayer(points, {
+      radius: 20,
+      blur: 15,
+      maxZoom: 16,
+      gradient: colorScheme
+    });
   }
 
   const thermalLayers = {
-    ndvi: generateDenseHeatmap(defaultCenter[0], defaultCenter[1], 0.025, 1200, {0.2: 'red', 0.4: 'yellow', 0.7: 'lime', 1.0: '#00ff00'}),
-    heat: generateDenseHeatmap(defaultCenter[0], defaultCenter[1], 0.03, 1500, {0.4: 'blue', 0.6: 'cyan', 0.7: 'lime', 0.8: 'yellow', 1.0: 'red'}),
-    scope: generateDenseHeatmap(defaultCenter[0], defaultCenter[1], 0.015, 800, {0.4: 'purple', 0.8: 'orange', 1.0: 'red'}),
+    ndvi: generateDenseHeatmap(defaultCenter[0], defaultCenter[1], 0.025, 1200, { 0.2: 'red', 0.4: 'yellow', 0.7: 'lime', 1.0: '#00ff00' }),
+    heat: generateDenseHeatmap(defaultCenter[0], defaultCenter[1], 0.03, 1500, { 0.4: 'blue', 0.6: 'cyan', 0.7: 'lime', 0.8: 'yellow', 1.0: 'red' }),
+    scope: generateDenseHeatmap(defaultCenter[0], defaultCenter[1], 0.015, 800, { 0.4: 'purple', 0.8: 'orange', 1.0: 'red' }),
     supply: L.featureGroup([
-        L.polyline([[-0.502, 35.415], [-0.508, 35.420], [-0.515, 35.425], [-0.520, 35.410]], {color: '#ff4d4d', weight: 6, opacity: 0.8}),
-        generateDenseHeatmap(-0.508, 35.420, 0.005, 300, {0.5: 'orange', 1.0: 'red'}),
-        generateDenseHeatmap(-0.515, 35.425, 0.005, 300, {0.5: 'orange', 1.0: 'red'})
+      L.polyline([[-0.502, 35.415], [-0.508, 35.420], [-0.515, 35.425], [-0.520, 35.410]], { color: '#ff4d4d', weight: 6, opacity: 0.8 }),
+      generateDenseHeatmap(-0.508, 35.420, 0.005, 300, { 0.5: 'orange', 1.0: 'red' }),
+      generateDenseHeatmap(-0.515, 35.425, 0.005, 300, { 0.5: 'orange', 1.0: 'red' })
     ]),
-    baseline: generateDenseHeatmap(defaultCenter[0], defaultCenter[1], 0.04, 2000, {0.2: '#b3cde0', 0.5: '#005b96', 1.0: '#03396c'}),
-    lulc: generateDenseHeatmap(defaultCenter[0], defaultCenter[1], 0.025, 1000, {0.3: 'yellow', 0.6: 'orange', 1.0: '#8b4513'}),
-    emissions: generateDenseHeatmap(defaultCenter[0], defaultCenter[1], 0.035, 1400, {0.4: 'yellow', 0.7: 'red', 1.0: 'black'})
+    baseline: generateDenseHeatmap(defaultCenter[0], defaultCenter[1], 0.04, 2000, { 0.2: '#b3cde0', 0.5: '#005b96', 1.0: '#03396c' }),
+    lulc: generateDenseHeatmap(defaultCenter[0], defaultCenter[1], 0.025, 1000, { 0.3: 'yellow', 0.6: 'orange', 1.0: '#8b4513' }),
+    emissions: generateDenseHeatmap(defaultCenter[0], defaultCenter[1], 0.035, 1400, { 0.4: 'yellow', 0.7: 'red', 1.0: 'black' })
   };
-  
+
   let currentThermalLayer = thermalLayers.ndvi;
   currentThermalLayer.addTo(thermalMap);
 
   const thermalSelect = document.getElementById('thermalMapLayerSelect');
   if (thermalSelect) {
-      thermalSelect.addEventListener('change', (e) => {
-          thermalMap.removeLayer(currentThermalLayer);
-          currentThermalLayer = thermalLayers[e.target.value] || thermalLayers.ndvi;
-          currentThermalLayer.addTo(thermalMap);
-          if (currentThermalLayer.getBounds && typeof currentThermalLayer.getBounds === 'function') {
-              try { thermalMap.fitBounds(currentThermalLayer.getBounds(), {padding: [20,20]}); } catch(err){}
-          }
-      });
+    thermalSelect.addEventListener('change', (e) => {
+      thermalMap.removeLayer(currentThermalLayer);
+      currentThermalLayer = thermalLayers[e.target.value] || thermalLayers.ndvi;
+      currentThermalLayer.addTo(thermalMap);
+      if (currentThermalLayer.getBounds && typeof currentThermalLayer.getBounds === 'function') {
+        try { thermalMap.fitBounds(currentThermalLayer.getBounds(), { padding: [20, 20] }); } catch (err) { }
+      }
+    });
   }
 
   // Also sync size when expanding
   auditMap.on('resize', () => {
-      setTimeout(() => thermalMap.invalidateSize(), 100);
+    setTimeout(() => thermalMap.invalidateSize(), 100);
   });
-  
+
   // Ensure expanding cell invalidates map size
   document.querySelectorAll('.cell-btn[title="Expand"]').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -934,30 +934,30 @@ document.addEventListener('DOMContentLoaded', () => {
     [-0.504, 35.417, 0.3], [-0.505, 35.412, 0.7]
   ];
   if (typeof L.heatLayer !== 'undefined') {
-    L.heatLayer(heatPoints, {radius: 40, blur: 20, maxZoom: 16, gradient: {0.4: 'blue', 0.6: 'cyan', 0.7: 'lime', 0.8: 'yellow', 1.0: 'red'}}).addTo(fieldMap);
+    L.heatLayer(heatPoints, { radius: 40, blur: 20, maxZoom: 16, gradient: { 0.4: 'blue', 0.6: 'cyan', 0.7: 'lime', 0.8: 'yellow', 1.0: 'red' } }).addTo(fieldMap);
   }
 
   // Draw static NDVI gradient bar
   const nCanvas = document.getElementById('ndviScaleCanvas');
   if (nCanvas) {
     const nCtx = nCanvas.getContext('2d');
-    const nGrd = nCtx.createLinearGradient(0,0,0,220);
+    const nGrd = nCtx.createLinearGradient(0, 0, 0, 220);
     nGrd.addColorStop(0, '#00ff00');
     nGrd.addColorStop(0.5, '#ffff00');
     nGrd.addColorStop(1, '#ff0000');
     nCtx.fillStyle = nGrd;
-    nCtx.fillRect(0,0,16,220);
+    nCtx.fillRect(0, 0, 16, 220);
   }
 
   // ───────────────────────────────────────────────────────────────────
   // 8. LAYER 1 & 4/5 INTEGRATIONS (Plant, Audit, Download, GEE, Chart)
   // ───────────────────────────────────────────────────────────────────
-  
+
   // Fetch GEE dynamic tile URL
   fetch(`${API_BASE}/gee/tile-url`)
     .then(r => r.json())
     .then(data => {
-      if(data.status === "success" && data.tile_url) {
+      if (data.status === "success" && data.tile_url) {
         mapboxUrl = data.tile_url;
         layersConfig.satellite.setUrl(mapboxUrl);
         subMap1Layer.setUrl(mapboxUrl);
@@ -1018,12 +1018,12 @@ document.addEventListener('DOMContentLoaded', () => {
         zoomPulse.style.display = 'block';
         fetch(`${API_BASE}/deforestation/alert`, {
           method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({farm_id: activeFarmId})
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ farm_id: activeFarmId })
         })
-        .then(r => r.json())
-        .then(res => showToast(`Deforestation Alert! Canopy loss detected. ${res.status}`))
-        .catch(() => showToast(`Deforestation Alert! Auto-SMS sent to rangers.`));
+          .then(r => r.json())
+          .then(res => showToast(`Deforestation Alert! Canopy loss detected. ${res.status}`))
+          .catch(() => showToast(`Deforestation Alert! Auto-SMS sent to rangers.`));
       }, 4000);
     }
   }
@@ -1035,7 +1035,7 @@ document.addEventListener('DOMContentLoaded', () => {
       .catch(err => {
         console.warn('[NDVI Chart] API unreachable, using fallback:', err.message);
         buildNdviChart(
-          ['Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun'],
+          ['Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
           [0.45, 0.48, 0.47, 0.42, 0.51, 0.62, 0.58, 0.65, 0.72]
         );
       });
@@ -1048,14 +1048,14 @@ document.addEventListener('DOMContentLoaded', () => {
   // Plant & Verify (CNN)
   const btnPlantVerify = document.getElementById('btnPlantVerify');
   const cnnPhotoInput = document.getElementById('cnnPhotoInput');
-  
+
   if (btnPlantVerify && cnnPhotoInput) {
     btnPlantVerify.addEventListener('click', () => {
       cnnPhotoInput.click();
     });
 
     cnnPhotoInput.addEventListener('change', async (e) => {
-      if(e.target.files.length > 0) {
+      if (e.target.files.length > 0) {
         btnPlantVerify.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
         showToast('Uploading geotagged photo to CNN...');
 
@@ -1069,7 +1069,7 @@ document.addEventListener('DOMContentLoaded', () => {
             body: formData  // multipart/form-data — do NOT set Content-Type manually
           });
           const data = await res.json();
-          if(data.verified) {
+          if (data.verified) {
             btnPlantVerify.innerHTML = `<i class="fas fa-check-circle"></i> Verified: ${data.confidence_pct}%`;
             btnPlantVerify.style.background = '#0ea5e9'; // success color
             showToast(data.message);
@@ -1077,7 +1077,7 @@ document.addEventListener('DOMContentLoaded', () => {
             showToast('Verification rejected: ' + (data.reason || 'Unknown'));
             btnPlantVerify.innerHTML = '<i class="fas fa-camera"></i> Plant & Verify (CNN)';
           }
-        } catch(err) {
+        } catch (err) {
           showToast('CNN verification failed: ' + err.message);
           btnPlantVerify.innerHTML = '<i class="fas fa-camera"></i> Plant & Verify (CNN)';
         }
@@ -1104,13 +1104,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const data = await res.json();
         if (zoomPulse) zoomPulse.style.display = 'none'; // outer-scope zoomPulse
 
-        if(res.ok) {
+        if (res.ok) {
           btnRunAudit.innerHTML = `<i class="fas fa-check"></i> Paid Ksh ${data.payout_ksh}`;
           btnRunAudit.style.background = '#7EC843';
-          
+
           const tCarbon = document.getElementById('tCarbon');
           if (tCarbon) {
-              tCarbon.innerHTML = `${(data.carbon_density || 25.1)} tCO₂e/ha <span style="color:#38a1ff;font-size:12px;">±2.9%</span>`;
+            tCarbon.innerHTML = `${(data.carbon_density || 25.1)} tCO₂e/ha <span style="color:#38a1ff;font-size:12px;">±2.9%</span>`;
           }
 
           // BUG FIX: guard against undefined/null hedera_tx_id before calling .substring()
@@ -1120,7 +1120,7 @@ document.addEventListener('DOMContentLoaded', () => {
           showToast('Audit Error: ' + (data.detail || 'Unknown'));
           btnRunAudit.innerHTML = '<i class="fas fa-satellite"></i> Run Audit & Payout';
         }
-      } catch(err) {
+      } catch (err) {
         if (zoomPulse) zoomPulse.style.display = 'none';
         showToast('Network error during audit.');
         btnRunAudit.innerHTML = '<i class="fas fa-satellite"></i> Run Audit & Payout';
@@ -1162,21 +1162,21 @@ document.addEventListener('DOMContentLoaded', () => {
   if (globalSearch && searchDropdown) {
     globalSearch.addEventListener('input', (e) => {
       const query = e.target.value.trim();
-      
+
       clearTimeout(searchTimeout);
       if (query.length < 3) {
         searchDropdown.style.display = 'none';
         if (searchIcon) searchIcon.className = 'fas fa-search';
         return;
       }
-      
+
       if (searchIcon) searchIcon.className = 'fas fa-spinner';
-      
+
       searchTimeout = setTimeout(async () => {
         try {
           const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5`);
           const data = await res.json();
-          
+
           searchDropdown.innerHTML = '';
           if (data && data.length > 0) {
             data.forEach(item => {
@@ -1302,7 +1302,7 @@ document.addEventListener('DOMContentLoaded', () => {
   async function fetchFarms() {
     try {
       const res = await fetch(`${API_BASE}/farms`);
-      if(!res.ok) throw new Error('Failed to fetch farms');
+      if (!res.ok) throw new Error('Failed to fetch farms');
       const fc = await res.json();
       L.geoJSON(fc, {
         style: {
@@ -1321,7 +1321,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
           });
           drawnItemsAudit.addLayer(layer);
-          
+
           const clonedLayer = L.geoJSON(feature, {
             style: { color: '#7EC843', weight: 2, fillOpacity: 0.1 }
           });
@@ -1337,7 +1337,7 @@ document.addEventListener('DOMContentLoaded', () => {
           drawnItemsField.addLayer(clonedLayer);
         }
       });
-    } catch(err) {
+    } catch (err) {
       console.error('Error fetching farms:', err);
     }
   }
@@ -1351,6 +1351,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ───────────────────────────────────────────────────────────────────
 
   const AGENT_WEBHOOK_URL = 'https://quasarnate.app.n8n.cloud/webhook/elevenlabs';
+  const AGENT_POLL_URL = 'https://proxima-opal-platform-1.onrender.com/api/agent-action';
   const AGENT_POLL_INTERVAL_MS = 4000; // Poll every 4 seconds
   let agentLastSeenId = null;           // Deduplicate repeated responses
 
@@ -1368,7 +1369,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ── State sync: record last agent action ──────────────────────────
     if (window.patchState) window.patchState({
-      lastAgentIntent : intent,
+      lastAgentIntent: intent,
       lastAgentPayload: payload
     });
 
@@ -1377,8 +1378,8 @@ document.addEventListener('DOMContentLoaded', () => {
       // ── MAP_FLY_TO ──────────────────────────────────────────────────
       // Payload: { lat, lng, location, zoom? }
       case 'MAP_FLY_TO': {
-        const lat  = parseFloat(payload.lat);
-        const lng  = parseFloat(payload.lng);
+        const lat = parseFloat(payload.lat);
+        const lng = parseFloat(payload.lng);
         const zoom = parseInt(payload.zoom) || 14;
         if (isNaN(lat) || isNaN(lng)) {
           showToast('Agent: Invalid coordinates received.');
@@ -1433,7 +1434,7 @@ document.addEventListener('DOMContentLoaded', () => {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ name: payload.name, phone: payload.phone, location: payload.location })
-        }).catch(() => {}); // fire-and-forget
+        }).catch(() => { }); // fire-and-forget
         break;
       }
 
@@ -1493,9 +1494,26 @@ document.addEventListener('DOMContentLoaded', () => {
    */
   function handleAgenticWebhook(data) {
     if (!data) return;
-    // Deduplicate using optional id field
-    if (data.id && data.id === agentLastSeenId) return;
-    if (data.id) agentLastSeenId = data.id;
+
+    // Deep-search: unwrap one level of nesting if intent is not at the root
+    // (e.g. { response: { intent, payload } } or { action: { intent, payload } })
+    if (!data.intent && !data.actionRequired) {
+      const WRAPPER_KEYS = ['response', 'action', 'result', 'output', 'message', 'data'];
+      for (const key of WRAPPER_KEYS) {
+        if (data[key] && typeof data[key] === 'object' && (data[key].intent || data[key].actionRequired)) {
+          data = data[key];
+          break;
+        }
+      }
+    }
+
+    // Deduplicate using optional id field (check root and one level down)
+    const incomingId = data.id || data.messageId || null;
+    if (incomingId && incomingId === agentLastSeenId) {
+      console.debug('[Agent] Duplicate message ignored, id:', incomingId);
+      return;
+    }
+    if (incomingId) agentLastSeenId = incomingId;
 
     // Support both flat { intent, payload } and wrapped { actionRequired, data }
     if (data.intent) {
@@ -1503,14 +1521,17 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (data.actionRequired) {
       // n8n AI Workflow Coordinator schema bridge
       const mapped = {
-        intent: data.actionRequired === 'navigate_map'  ? 'MAP_FLY_TO'
-               : data.actionRequired === 'farmer_signup' ? 'FARMER_SIGNUP'
-               : data.actionRequired === 'zoom_pulse'    ? 'UI_ZOOM_PULSE'
-               : data.actionRequired === 'update_counters' ? 'UPDATE_COUNTERS'
-               : data.actionRequired.toUpperCase(),
+        intent: data.actionRequired === 'navigate_map' ? 'MAP_FLY_TO'
+          : data.actionRequired === 'flyTo' ? 'MAP_FLY_TO'
+            : data.actionRequired === 'farmer_signup' ? 'FARMER_SIGNUP'
+              : data.actionRequired === 'zoom_pulse' ? 'UI_ZOOM_PULSE'
+                : data.actionRequired === 'update_counters' ? 'UPDATE_COUNTERS'
+                  : data.actionRequired.toUpperCase(),
         payload: data.payload || data.data || {}
       };
       executeAgentAction(mapped);
+    } else {
+      console.warn('[Agent] Received message with no recognisable intent or actionRequired:', data);
     }
   }
 
@@ -1525,10 +1546,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const sse = new EventSource(AGENT_WEBHOOK_URL + '/stream');
         sse.onmessage = (event) => {
           try {
-            const data = JSON.parse(event.data);
-            handleAgenticWebhook(data);
+            // Strip markdown code-fence blocks the AI might wrap around JSON
+            // e.g.  ```json\n{...}\n```  or  ```\n{...}\n```
+            let raw = event.data;
+            raw = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
+
+            const parsed = JSON.parse(raw);
+            handleAgenticWebhook(parsed);
           } catch (e) {
-            console.warn('[Agent SSE] Failed to parse message:', e);
+            console.warn('[Agent SSE] Failed to parse message:', e, '| raw data:', event.data);
           }
         };
         sse.onerror = () => {
@@ -1553,16 +1579,10 @@ document.addEventListener('DOMContentLoaded', () => {
   function startAgentLongPoll() {
     setInterval(async () => {
       try {
-        const res = await fetch(AGENT_WEBHOOK_URL, {
-          method: 'GET',
-          headers: { 'Accept': 'application/json' }
-        });
-        if (!res.ok) return;
+        const res = await fetch(AGENT_POLL_URL);
         const data = await res.json();
-        if (data) handleAgenticWebhook(data);
-      } catch (e) {
-        // Silently ignore network errors — n8n may not always have a pending action
-      }
+        if (data && data.intent) handleAgenticWebhook(data);
+      } catch (e) { }
     }, AGENT_POLL_INTERVAL_MS);
     console.log('[Agent] Long-poll listener active (every', AGENT_POLL_INTERVAL_MS, 'ms).');
   }
