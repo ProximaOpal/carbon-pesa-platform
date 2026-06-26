@@ -1352,7 +1352,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const AGENT_WEBHOOK_URL = 'https://quasarnate.app.n8n.cloud/webhook/elevenlabs';
   const AGENT_POLL_URL = 'https://carbon-pesa-platform-1.onrender.com/api/agent-action';
-  const AGENT_POLL_INTERVAL_MS = 4000; // Poll every 4 seconds
+  const AGENT_POLL_INTERVAL_MS = 1000; // Poll every 1 second
   let agentLastSeenId = null;           // Deduplicate repeated responses
 
   /**
