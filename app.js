@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!odoCarbon || !odoPayout) return;
 
     function fetchStats() {
-      fetch('https://proxima-opal-platform-1.onrender.com/stats/dashboard')
+      fetch('https://carbon-pesa-platform-1.onrender.com/stats/dashboard')
         .then(function (res) { return res.json(); })
         .then(function (data) {
           odoCarbon.innerHTML = data.total_tco2e_sequestered;

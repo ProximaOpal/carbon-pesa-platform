@@ -3,7 +3,7 @@
 // =====================================================================
 
 document.addEventListener('DOMContentLoaded', () => {
-  const API_BASE = "https://proxima-opal-platform-1.onrender.com";
+  const API_BASE = "https://carbon-pesa-platform-1.onrender.com";
   let activeFarmId = 1;
 
   // ───────────────────────────────────────────────────────────────────
@@ -1351,7 +1351,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ───────────────────────────────────────────────────────────────────
 
   const AGENT_WEBHOOK_URL = 'https://quasarnate.app.n8n.cloud/webhook/elevenlabs';
-  const AGENT_POLL_URL = 'https://proxima-opal-platform-1.onrender.com/api/agent-action';
+  const AGENT_POLL_URL = 'https://carbon-pesa-platform-1.onrender.com/api/agent-action';
   const AGENT_POLL_INTERVAL_MS = 4000; // Poll every 4 seconds
   let agentLastSeenId = null;           // Deduplicate repeated responses
 
