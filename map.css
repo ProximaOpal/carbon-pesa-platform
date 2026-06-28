@@ -518,7 +518,7 @@ html, body {
   width: 320px;
   background: #181818;
   border-right: 1px solid var(--panel-border);
-  display: none; flex-direction: column;
+  display: flex; flex-direction: column;
 }
 .fa-subpanel {
   display: none;
