@@ -14,7 +14,7 @@
 (function () {
   'use strict';
 
-  const STATE_SYNC_URL     = 'https://carbon-pesa-platform-1.onrender.com/api/update-state';
+  const STATE_SYNC_URL     = 'https://carbon-pesa-platform-srqx.onrender.com/api/update-state';
   const DEBOUNCE_MS        = 500;
   let   _syncTimer         = null;
 

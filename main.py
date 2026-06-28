@@ -51,7 +51,7 @@ def keep_alive_ping():
     time.sleep(30)
     while True:
         try:
-            url = "https://carbon-pesa-platform-1.onrender.com/"
+            url = "https://carbon-pesa-platform-srqx.onrender.com/"
             req = urllib.request.Request(url, headers={"User-Agent": "CarbonPesaKeepAlive"})
             with urllib.request.urlopen(req) as res:
                 res.read()

@@ -1098,7 +1098,7 @@
     }
 
     function fetchLivePrice() {
-      fetch("https://carbon-pesa-platform-1.onrender.com/stats/dashboard")
+      fetch("https://carbon-pesa-platform-srqx.onrender.com/stats/dashboard")
         .then(res => res.json())
         .then(data => {
           const currentPrice = data.spot_price_usd || (lastPrice + (Math.random() - 0.5));

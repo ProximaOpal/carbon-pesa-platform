@@ -3,7 +3,7 @@
 // =====================================================================
 
 document.addEventListener('DOMContentLoaded', () => {
-  const API_BASE = "https://carbon-pesa-platform-1.onrender.com";
+  const API_BASE = "https://carbon-pesa-platform-srqx.onrender.com";
   let activeFarmId = 1;
 
   // ───────────────────────────────────────────────────────────────────
@@ -638,34 +638,7 @@ document.addEventListener('DOMContentLoaded', () => {
     showToast('⚙️ Settings panel — coming soon.');
   });
 
-  // Field sidebar icon nav
-  const subPanels = {
-    'Layers': 'panelStress',
-    'Fields': 'panelAudit',
-    'Analytics': 'panelFinancials'
-  };
-
-  document.querySelectorAll('.fas-icon').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.fas-icon').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      const title = btn.getAttribute('title');
-      const targetPanelId = subPanels[title] || 'panelStress';
-
-      document.querySelectorAll('.fa-subpanel').forEach(p => {
-        p.style.display = 'none';
-        p.classList.remove('active');
-      });
-      const tp = document.getElementById(targetPanelId);
-      if (tp) {
-        tp.style.display = 'flex';
-        tp.classList.add('active');
-        if (targetPanelId === 'panelAudit') fetchAuditHistory();
-        if (targetPanelId === 'panelFinancials') fetchFinancials();
-      }
-      showToast(`📌 ${title || 'Panel'} activated.`);
-    });
-  });
+  // Sidebar icon navigation removed — panels now controlled via alternative UI
 
   async function fetchAuditHistory() {
     const list = document.getElementById('auditHistoryList');
@@ -1351,7 +1324,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ───────────────────────────────────────────────────────────────────
 
   const AGENT_WEBHOOK_URL = 'https://quasarnate.app.n8n.cloud/webhook/elevenlabs';
-  const AGENT_POLL_URL = 'https://carbon-pesa-platform-1.onrender.com/api/agent-action';
+  const AGENT_POLL_URL = 'https://carbon-pesa-platform-srqx.onrender.com/api/agent-action';
   const AGENT_POLL_INTERVAL_MS = 1000; // Poll every 1 second
   let agentLastSeenId = null;           // Deduplicate repeated responses
 
