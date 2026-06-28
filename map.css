@@ -224,10 +224,10 @@ html, body {
 
 /* Left Area: Map + UAVs */
 .audit-left {
-  width: 55%;
+  width: 100%;
   display: flex;
   flex-direction: column;
-  border-right: 1px solid var(--panel-border);
+  border-right: none;
   padding: 12px;
   gap: 12px;
 }
@@ -358,6 +358,7 @@ html, body {
 
 /* Right Area: 2x2 Grid */
 .audit-right {
+  display: none;
   width: 45%;
   padding: 12px 12px 12px 0;
 }
